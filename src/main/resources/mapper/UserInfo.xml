@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC  "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.demo.mapper.UserInfoMapper">
+
+    <parameterMap id="parameterMapUserInfo" type="cn.demo.entity.UserInfo">
+        <parameter property="userId"/>
+        <parameter property="userName"/>
+        <parameter property="password"/>
+        <parameter property="userSex"/>
+        <parameter property="userAge"/>
+        <parameter property="userPhone"/>
+        <parameter property="isValid"/>
+    </parameterMap>
+
+    <resultMap id="resultMapUserInfo" type="cn.demo.entity.UserInfo">
+        <result property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="password" column="password"/>
+        <result property="userSex" column="user_sex"/>
+        <result property="userAge" column="user_age"/>
+        <result property="userPhone" column="user_phone"/>
+        <result property="isValid" column="is_valid"/>
+    </resultMap>
+
+    <!--添加-->
+    <insert id="addUser" parameterType="UserInfo">
+        INSERT INTO user_info (user_name,password, user_sex, user_age, user_phone, is_valid)
+        VALUES (#{userName}, #{password}, #{userSex}, #{userAge}, #{userPhone}, #{isValid})
+    </insert>
+
+    <!--获取所有用户信息 ，
+    可以使用resultType，也可以使用resultMap，但是前提是需要再写一个resultMapUserInfo-->
+    <select id="getAllUserInfo" resultMap="resultMapUserInfo">
+        SELECT * FROM user_info
+    </select>
+
+    <!--根据ID获取用户信息-->
+    <select id="getByUserId" parameterType="Integer" resultMap="resultMapUserInfo">
+        SELECT * FROM user_info WHERE user_id=#{userId}
+    </select>
+
+    <!--测试动态SQL语句-->
+    <select id="queryByUserAttr" parameterType="UserInfo" resultMap="resultMapUserInfo">
+        SELECT * FROM user_info ui
+        <where>
+            ui.is_valid = 1
+            <if test="userName != null and userName != ''">
+                AND ui.user_name = #{userName}
+            </if>
+            <if test="password != null and password !=''">
+                AND ui.password = #{password}
+            </if>
+        </where>
+    </select>
+
+    <!--根据ID删除用户信息-->
+    <delete id="delUser" parameterType="UserInfo">
+        DELETE FROM user_info WHERE user_id = #{userId}
+    </delete>
+
+    <!--更新用户信息-->
+    <update id="updateUser" parameterType="UserInfo">
+        UPDATE user_info
+        SET user_name=#{userName}, user_sex=#{userSex}, user_age = #{userAge}, user_phone = #{userPhone}
+        WHERE user_id = #{userId}
+    </update>
+
+</mapper>
